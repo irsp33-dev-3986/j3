@@ -1,24 +1,12 @@
-#include <stdio.h>
-#include <windows.h>
 #include <string.h>
 #include <stdbool.h>
+#include "func.h"
 
 char team_server_array[];
 int counter = 0;
 int global_counter = 0;
 
-struct team_server {
-	int id;
-	int watermark;
-	int sleeptime;
-	char fqdn;
-	char spawnto;
-	char type;
-	char ip;
-	BOOL is_cracked;
-};
-
-struct team_server build_team_server(int watermark, int sleeptime, char fqdn[], char spawnto[], char ip[])
+struct team_server build_team_server(int watermark, int sleeptime, wchar_t *fqdn, wchar_t *spawnto, wchar_t *ip)
 {
 	struct team_server team_server_item = {
 		counter,
@@ -26,7 +14,7 @@ struct team_server build_team_server(int watermark, int sleeptime, char fqdn[], 
 		sleeptime,
 		fqdn,
 		spawnto,
-		"cobalt_strike",
+		L"cobalt_strike",
 		ip,
 		NULL
 	};
@@ -44,32 +32,33 @@ char build_team_server_array(char team_server_item)
 	return team_server_array;
 }
 
-int main(void)
-{
-	int watermark = 987654321;
-	int sleeptime = 62248;
-	char fqdn[] = "v10.5.org";
-	char spawnto[] = "%windir%\sysnative\dllhost.exe -o enable";
-	char ip[] = "94.232.46.229";
-	struct team_server ts = build_team_server(watermark, sleeptime, fqdn, spawnto, ip);
-	//is_cracked(ts);
-	//printf("%s", ts);
-	char test[] = "testesttest\n";
-	printf("%s", test);
-	printf("L'hote est numero %i, son IP est %s et le FQDN associe est %c. Il heberge %c. Sa watermark est %i et il est configurer pour utiliser %c. Cracked ? : %s.\n", ts.id, ts.ip, ts.fqdn, ts.type, ts.watermark, ts.spawnto, ts.is_cracked ? "true" : "false");
-}
-
 struct team_server is_cracked(struct team_server team_server_instance)
 {
 	if (team_server_instance.watermark != 0)
 	{
-		team_server_instance.is_cracked= FALSE;
+		team_server_instance.cracked = TRUE;
 	}
 	else
 	{
-		team_server_instance.is_cracked = TRUE;
+		team_server_instance.cracked = FALSE;
 	}
 	return team_server_instance;
+}
+
+int main(void)
+{
+	//int watermark = 987654321;
+	int watermark = 0;
+	int sleeptime = 62248;
+	wchar_t *fqdn = L"v10.5.org";
+	wchar_t *spawnto = L"%windir%\\sysnative\\dllhost.exe -o enable";
+	wchar_t *ip = L"94.232.46.229";
+	struct team_server ts = build_team_server(watermark, sleeptime, fqdn, spawnto, ip);
+	is_cracked(ts);
+	//printf("%s", ts);
+	printf("%d\n", ts.cracked);
+	printf("L'hote est numero %i, son IP est %ls et le FQDN associe est %ls. Il heberge %ls. Sa watermark est %i et il est configure pour utiliser %ls. Cracked ? : %s.\n", ts.id, ts.ip, ts.fqdn, ts.type, ts.watermark, ts.spawnto, ts.cracked ? "true" : "false");
+	return 0;
 }
 
 //build_team_server(987654321, 62248, "v10.5.org", "%windir%\sysnative\dllhost.exe -o enable","94.232.46.229")
